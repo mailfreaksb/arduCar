@@ -1,11 +1,8 @@
-/* Changelog [01/11/25]
-Version - 0.091
-This version is stable, and apart from wiring issues car is perfectly functional. 
+/* Changelog [02/11/25]
+Version - 1.0 (Prototype stage reached)
+This version is stable
 Fixed:
-1. Combined key presses ( F + L, etc have reversed turning)
-
-Known list of issues:
-1. Testing cannot be invoked dynamically
+1. Test mode can now be dynamically called by sending the "Xx" key event.
 */
 
 #include <SoftwareSerial.h>
@@ -13,7 +10,7 @@ Known list of issues:
 // =========================
 // CONFIGURATION
 // =========================
-#define TEST_MODE false   // Set to true to run test sequence
+#define TEST_MODE false  // Set to true to run test sequence
 
 // Bluetooth (HC-05) on D2 (TX) and D3 (RX)
 SoftwareSerial BTSerial(3, 2); // RX, TX
@@ -128,6 +125,25 @@ void runMotorTest() {
   Serial.println("Test Complete");
 }
 
+void startBluetoothTest() {
+  BTSerial.println("Starting tests... ");
+  bool exitBTTest = false;
+  while (!exitBTTest) {
+    if (BTSerial.available()) {
+      char command = BTSerial.read();
+      BTSerial.print("Received: ");
+      BTSerial.println(command);
+      Serial.print("Received: ");
+      Serial.println(command);
+      if (command == 'X' || command == 'x')
+        exitBTTest = true;
+    }
+  }
+  delay(1000);
+  BTSerial.println("Starting motor test");
+  runMotorTest();
+}
+
 // =========================
 // SETUP
 // =========================
@@ -164,6 +180,7 @@ void loop() {
       case 'H': forwardRight(); break;  // Forward + Right
       case 'I': backwardLeft(); break;  // Backward + Left
       case 'J': backwardRight(); break; // Backward + Right
+      case 'X': startBluetoothTest(); break; // First test bluetooth comm then invoke motor test
 
       // Speed control (0–9)
       case '0' ... '9':

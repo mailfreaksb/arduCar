@@ -1,10 +1,11 @@
 /* Changelog [01/11/25]
-Version - 0.09
+Version - 0.091
 This version is stable, and apart from wiring issues car is perfectly functional. 
+Fixed:
+1. Combined key presses ( F + L, etc have reversed turning)
 
 Known list of issues:
-1. Combined key presses ( F + L, etc have reversed turning)
-2. Testing cannot be invoked dynamically
+1. Testing cannot be invoked dynamically
 */
 
 #include <SoftwareSerial.h>
@@ -18,12 +19,12 @@ Known list of issues:
 SoftwareSerial BTSerial(3, 2); // RX, TX
 
 // L298N Motor Driver pins
-const int IN1 = 4;   // Left motor direction 1
-const int IN2 = 5;   // Left motor direction 2
-const int IN3 = 6;   // Right motor direction 1
-const int IN4 = 7;   // Right motor direction 2
-const int ENA = 9;   // Left motor enable (PWM)
-const int ENB = 10;  // Right motor enable (PWM)
+const int IN1 = 4;   // right motor direction 1
+const int IN2 = 5;   // right motor direction 2
+const int IN3 = 6;   // left motor direction 1
+const int IN4 = 7;   // left motor direction 2
+const int ENA = 9;   // right motor enable (PWM)
+const int ENB = 10;  // left motor enable (PWM)
 
 // Motor speed variables
 int speedLeft = 150;
@@ -60,38 +61,38 @@ void moveBackward() {
   setSpeed(speedLeft, speedRight);
 }
 
-void turnRightPivot() {  // left pivot = left motor backward, right motor forward
+void turnRightPivot() {  // right pivot = left motor fwd, right motor bwd
   digitalWrite(IN1, LOW); digitalWrite(IN2, HIGH);
   digitalWrite(IN3, HIGH); digitalWrite(IN4, LOW);
   setSpeed(speedLeft, speedRight);
 }
 
-void turnLeftPivot() { // right pivot = left motor forward, right motor backward
+void turnLeftPivot() { // left pivot = left motor bwd, right motor fwd
   digitalWrite(IN1, HIGH); digitalWrite(IN2, LOW);
   digitalWrite(IN3, LOW); digitalWrite(IN4, HIGH);
   setSpeed(speedLeft, speedRight);
 }
 
 // Diagonal directions
-void forwardLeft() {
+void forwardRight() {
   digitalWrite(IN1, LOW); digitalWrite(IN2, LOW);
   digitalWrite(IN3, HIGH); digitalWrite(IN4, LOW);
   setSpeed(0, speedRight);  // Left motor off
 }
 
-void forwardRight() {
+void forwardLeft() {
   digitalWrite(IN1, HIGH); digitalWrite(IN2, LOW);
   digitalWrite(IN3, LOW); digitalWrite(IN4, LOW);
   setSpeed(speedLeft, 0);  // Right motor off
 }
 
-void backwardLeft() {
+void backwardRight() {
   digitalWrite(IN1, LOW); digitalWrite(IN2, HIGH);
   digitalWrite(IN3, LOW); digitalWrite(IN4, LOW);
   setSpeed(speedLeft, 0);
 }
 
-void backwardRight() {
+void backwardLeft() {
   digitalWrite(IN1, LOW); digitalWrite(IN2, LOW);
   digitalWrite(IN3, LOW); digitalWrite(IN4, HIGH);
   setSpeed(0, speedRight);
